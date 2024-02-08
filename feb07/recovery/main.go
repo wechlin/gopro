@@ -4,7 +4,10 @@ import (
 	"fmt"
 )
 
-func get(values []float64, idx int) float64 {
+func get(values []float64, idx int) (res float64) {
+	// Default value to return
+	res = 1.11
+
 	defer func() {
 		if x := recover(); x != nil {
 			fmt.Println(x)
