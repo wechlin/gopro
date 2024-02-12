@@ -1,6 +1,13 @@
+// Beer will print the lyrics to "99 Bottles of Beer on the Wall".
+// Invoke with -n <number> to start counting from number.
 package main
 
-import "fmt"
+import (
+	"flag"
+	"fmt"
+)
+
+var count = flag.Int("n", 99, "Number to start counting from")
 
 func bottles(count int) string {
 	switch count {
@@ -14,7 +21,8 @@ func bottles(count int) string {
 }
 
 func main() {
-	for n := 99; n >= 1; n-- {
+	flag.Parse()
+	for n := *count; n >= 1; n-- {
 		fmt.Println(bottles(n), "of beer on the wall")
 		fmt.Println(bottles(n), "of beer")
 		fmt.Println("Take one down")
