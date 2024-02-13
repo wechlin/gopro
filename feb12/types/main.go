@@ -35,6 +35,47 @@ func arrayChunk() {
 	fmt.Println(distance)
 }
 
+func mapChunk() {
+	var grades map[string]float64
+
+	if grades == nil {
+		fmt.Println("Maps start out as nil")
+	}
+
+	grades = make(map[string]float64)
+
+	key := "Bart"
+	grades[key] = 70.0
+
+	fmt.Println("Average for", key, "is", grades[key])
+	key = "Bort"
+	// Asking for a nonexistent key returns a 0-value
+	fmt.Println("Average for", key, "is", grades[key])
+
+	key = "Burt"
+	val, ok := grades[key]
+	if ok {
+		fmt.Println("Found for", key, "is", val)
+	} else {
+		fmt.Println("Key", key, "not in grades")
+	}
+
+	delete(grades, "Bart")
+
+	fmt.Println(grades)
+
+	// Map literals separate key from value with colons
+	grades = map[string]float64{"Bart": 70.0, "Milhouse": 81.3, "Nelson": 71.2}
+
+	for k := range grades {
+		fmt.Println(k)
+	}
+	for k, val := range grades {
+		fmt.Println(k, ":", val)
+	}
+}
+
 func main() {
-	arrayChunk()
+	//arrayChunk()
+	mapChunk()
 }
