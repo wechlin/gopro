@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 )
@@ -14,11 +13,9 @@ func MatchPrefixes(sentence string, startWith rune) []string {
 
 	for _, word := range words {
 		if strings.HasPrefix(word, string(startWith)) {
-			log.Println(cap(results))
 			results = append(results, word)
 		}
 	}
-	log.Println(cap(results))
 
 	return results
 }
