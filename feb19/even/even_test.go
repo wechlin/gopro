@@ -3,7 +3,7 @@ package even
 import "testing"
 
 func TestEven(t *testing.T) {
-	evens := []int{-2, 0, 2, 1024, 8, 12}
+	evens := []int{-2, 0, 2, 1024, 8, 12, 16}
 
 	for _, num := range evens {
 		if !IsEven(num) {
