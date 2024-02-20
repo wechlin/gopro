@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -27,12 +28,14 @@ func processFile(fname string) ([]string, error) {
 }
 
 func main() {
-	//count := flag.Int("count", -1, "print first 'n' results")
-	//unique := flag.Bool("unique", false, "no duplicates")
+	count := flag.Int("count", -1, "print first 'n' results")
+	unique := flag.Bool("unique", false, "no duplicates")
+
+	flag.Parse()
 
 	results := make([]string, 0)
 
-	for _, fname := range os.Args[1:] {
+	for _, fname := range flag.Args() {
 		words, err := processFile(fname)
 		if err != nil {
 			log.Printf("Unable to read words from '%s': %v", fname, err)
@@ -43,7 +46,18 @@ func main() {
 
 	slices.Sort(results)
 
+	var lastWord string
 	for _, word := range results {
+		if *unique && lastWord == word {
+			continue
+		}
+
+		if *count == 0 {
+			break
+		}
+		*count--
+
 		fmt.Println(word)
+		lastWord = word
 	}
 }
