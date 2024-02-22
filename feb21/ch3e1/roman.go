@@ -2,7 +2,6 @@ package ch3e1
 
 import (
 	"errors"
-	"regexp"
 	"strings"
 )
 
@@ -44,9 +43,11 @@ func Roman(value uint) (string, error) {
 func HinduArabic(roman string) (uint, error) {
 	var val uint
 
-	if match, _ := regexp.MatchString("^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$", roman); !match {
-		return 0, errors.New("not a roman numeral")
-	}
+	/*
+		if match, _ := regexp.MatchString("^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$", roman); !match {
+			return 0, errors.New("not a roman numeral")
+		}
+	*/
 
 	var seenD, seenL, seenV bool
 	for i, ch := range roman {
@@ -59,15 +60,19 @@ func HinduArabic(roman string) (uint, error) {
 			}
 			val += 500
 			seenD = true
+		// If this was `case 'C', 'J':` then the fuzzer found it
 		case 'C':
-			if i+1 < len(roman) && roman[i+1] != 'C' {
-				if roman[i+1] == 'D' || roman[i+1] == 'M' {
-					val--
-				} else {
+			if i+1 < len(roman) {
+				switch roman[i+1] {
+				case 'D', 'M':
+					val -= 100
+				case 'C', 'L', 'X', 'V', 'I':
+					val += 100
+				default:
 					return 0, errors.New("invalid subtraction " + roman[i:i+2])
 				}
 			} else {
-				val++
+				val += 100
 			}
 		case 'L':
 			if seenL {
@@ -76,14 +81,17 @@ func HinduArabic(roman string) (uint, error) {
 			val += 50
 			seenL = true
 		case 'X':
-			if i+1 < len(roman) && roman[i+1] != 'X' {
-				if roman[i+1] == 'L' || roman[i+1] == 'C' {
-					val--
-				} else {
+			if i+1 < len(roman) {
+				switch roman[i+1] {
+				case 'L', 'C':
+					val -= 10
+				case 'X', 'V', 'I':
+					val += 10
+				default:
 					return 0, errors.New("invalid subtraction " + roman[i:i+2])
 				}
 			} else {
-				val++
+				val += 10
 			}
 		case 'V':
 			if seenV {

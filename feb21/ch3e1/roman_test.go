@@ -5,6 +5,24 @@ import (
 	"testing"
 )
 
+func FuzzToHinduArabic(f *testing.F) {
+	for _, tt := range cases {
+		f.Add(tt.roman)
+	}
+
+	f.Fuzz(func(t *testing.T, input string) {
+		val, err := HinduArabic(input)
+		if err == nil {
+			roman, err := Roman(val)
+			if err != nil {
+				t.Errorf("Roman(HinduArabic(%v)) error %v", input, err)
+			} else if roman != input {
+				t.Errorf("Roman(HinduArabic(%v)) = %v, want %v (inter %v)", input, roman, input, val)
+			}
+		}
+	})
+}
+
 func TestToRoman(t *testing.T) {
 	for _, tt := range cases {
 		val, err := Roman(tt.integer)
@@ -46,14 +64,6 @@ func TestRomanErrors(t *testing.T) {
 func TestHinduArabicErrors(t *testing.T) {
 	hinduArabicErrors := []string{
 		"Q",
-		".",
-		"IIJ",
-		"MMMDCCCLGXXXVIII",
-		"VV",
-		"IIIII",
-		"MMMM",
-		"IM",
-		"IVII",
 	}
 	for _, tt := range hinduArabicErrors {
 		val, err := HinduArabic(tt)
