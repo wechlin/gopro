@@ -5,6 +5,14 @@ import (
 	"testing"
 )
 
+func BenchmarkHinduArabic(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		for _, tt := range cases {
+			HinduArabic(tt.roman)
+		}
+	}
+}
+
 func FuzzToHinduArabic(f *testing.F) {
 	for _, tt := range cases {
 		f.Add(tt.roman)

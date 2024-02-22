@@ -2,6 +2,7 @@ package ch3e1
 
 import (
 	"errors"
+	"regexp"
 	"strings"
 )
 
@@ -40,14 +41,18 @@ func Roman(value uint) (string, error) {
 	return roman, nil
 }
 
+var validRomanNumeral *regexp.Regexp
+
+func init() {
+	validRomanNumeral = regexp.MustCompile("^M{0,3}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$")
+}
+
 func HinduArabic(roman string) (uint, error) {
 	var val uint
 
-	/*
-		if match, _ := regexp.MatchString("^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$", roman); !match {
-			return 0, errors.New("not a roman numeral")
-		}
-	*/
+	if !validRomanNumeral.MatchString(roman) {
+		return 0, errors.New("not a roman numeral")
+	}
 
 	var seenD, seenL, seenV bool
 	for i, ch := range roman {
