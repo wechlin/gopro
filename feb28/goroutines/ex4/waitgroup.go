@@ -9,6 +9,7 @@ import (
 var wg sync.WaitGroup
 
 func process(n int, name <-chan string) {
+	// for-range on a channel will continually read until the channel is closed
 	for word := range name {
 		fmt.Println(n, "I found", word)
 	}
@@ -371,6 +372,7 @@ My advice is: GIVE IT UP!
 		incomingWork <- item
 	}
 
+	// The close of the channel causes the for-range on the channel to finish
 	close(incomingWork)
 	wg.Wait()
 }
