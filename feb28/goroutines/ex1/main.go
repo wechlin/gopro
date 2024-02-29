@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func greet(n int, finished chan bool) {
+func greet(n int, finished chan<- bool) {
 	fmt.Println("Hello World", n)
 	// Send to channel
 	finished <- true

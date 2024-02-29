@@ -12,7 +12,7 @@ func main() {
 	valueChannel := make(chan object)
 	done := make(chan bool)
 
-	go func(done chan bool) {
+	go func(done chan<- bool) {
 		local := <-valueChannel
 		local.name = "Norbert"
 		fmt.Println(local)
@@ -25,7 +25,7 @@ func main() {
 
 	refChannel := make(chan *object)
 
-	go func(done chan bool) {
+	go func(done chan<- bool) {
 		local := <-refChannel
 		local.name = "Nyman"
 		fmt.Println(local)
