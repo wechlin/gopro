@@ -7,6 +7,7 @@ import (
 
 type thing struct {
 	Name string
+	age  int
 }
 
 func main() {
@@ -16,13 +17,14 @@ func main() {
 
 	var obj = new(thing)
 	obj.Name = "Andy"
+	obj.age = 45
 
 	ref += 5
 
 	var up = unsafe.Pointer(ptr)
 	up = unsafe.Pointer(obj)
 	ref = uintptr(up)
-	ref += 8
+	ref += unsafe.Sizeof(obj.Name)
 	// The linter ain't lyin', this is dangerous
 	up = unsafe.Pointer(ref)
 
