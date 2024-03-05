@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"runtime/pprof"
 	"strings"
 	"sync"
 )
@@ -20,6 +21,10 @@ func main() {
 	pattern := os.Args[1]
 	root := os.Args[2]
 	//TODO vet that `root` is a directory
+	// After running, invoke `go tool pprof ch6e2 cpuprofile`
+	profileOutput, _ := os.Create("cpuprofile")
+
+	pprof.StartCPUProfile(profileOutput)
 
 	fs.WalkDir(os.DirFS(root), ".", func(fname string, d fs.DirEntry, problem error) error {
 		if d.IsDir() {
@@ -33,6 +38,7 @@ func main() {
 	})
 
 	wc.Wait()
+	pprof.StopCPUProfile()
 }
 
 func searchFile(fname, needle string) {
