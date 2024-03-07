@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 type numeric interface {
@@ -11,43 +12,56 @@ type numeric interface {
 		uint8 | uint16 | uint32 | uint64
 }
 
-func generator[T any](vals ...T) <-chan T {
+func generator[T any](done chan bool, vals ...T) <-chan T {
 	src := make(chan T)
 
 	go func() {
 		defer close(src)
 
 		for _, item := range vals {
-			src <- item
+			select {
+			case src <- item:
+			case <-done:
+				return
+			}
 		}
 	}()
 
 	return src
 }
 
-func square[T numeric](in <-chan T) <-chan T {
+func square[T numeric](done chan bool, in <-chan T) <-chan T {
 	out := make(chan T)
 
 	go func() {
 		defer close(out)
 		for v := range in {
-			out <- v * v
+			select {
+			case out <- v * v:
+			case <-done:
+				return
+			}
 		}
 	}()
 
 	return out
 }
 
-func merge[T any](ins ...<-chan T) <-chan T {
+func merge[T any](done chan bool, ins ...<-chan T) <-chan T {
 	var wg sync.WaitGroup
 
 	out := make(chan T)
 
 	slurp := func(in <-chan T) {
+		defer wg.Done()
+
 		for v := range in {
-			out <- v
+			select {
+			case out <- v:
+			case <-done:
+				return
+			}
 		}
-		wg.Done()
 	}
 
 	wg.Add(len(ins))
@@ -67,15 +81,19 @@ func merge[T any](ins ...<-chan T) <-chan T {
 }
 
 func main() {
-	source1 := generator(2, 4, 6)
-	source2 := generator(3, 5, 7)
+	var closed = make(chan bool)
+	source1 := generator(closed, 2, 4, 6)
+	source2 := generator(closed, 3, 5, 7)
 
-	stream := merge(source1, source2)
+	stream := merge(closed, source1, source2)
 
-	sq := square(stream)
+	sq := square(closed, stream)
 
 	fmt.Println(<-sq)
 	fmt.Println(<-sq)
 	fmt.Println(<-sq)
 	fmt.Println(<-sq)
+
+	close(closed)
+	time.Sleep(1 * time.Second)
 }
